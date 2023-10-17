@@ -17,7 +17,8 @@ const todoForm = $('#todo-form'),
   todoTask = $('#todo-task'),
   todoTaskError = $('#todo-task-error'),
   todoList = $('#todo-list'),
-  btnClearTasks = $('#btn-clear-tasks');
+  btnClearTasks = $('#btn-clear-tasks'),
+  btnClearInput = $('#btn-clear-input');
 
 const TODO_CACHE = 'todo-local-cache';
 
@@ -128,6 +129,12 @@ btnClearTasks.onclick = (e) => {
   todoArray = [];
   localStorage.removeItem(TODO_CACHE);
   renderTodoList(todoArray, todoList);
+}
+
+btnClearInput.onclick = (e) => {
+  e.stopPropagation();
+  e.preventDefault();
+  todoForm.reset();
 }
 
 (function () {
