@@ -53,6 +53,7 @@ function renderTodoList(todos, parentElem) {
     span.innerText = todo.task;
     // Create button to update
     const editButton = document.createElement('button');
+    editButton.classList.add('btn');
     editButton.innerText = 'E';
     editButton.onclick = () => {
       const isEditable = span.contentEditable === 'true';
@@ -63,14 +64,19 @@ function renderTodoList(todos, parentElem) {
         saveTodos(todos, TODO_CACHE);
         editButton.innerText = 'E';
         span.removeAttribute('contenteditable');
+        li.classList.remove('editing');
+
       } else {
         // Enter edit mode
         editButton.innerText = 'S';
         span.setAttribute('contenteditable', true);
+        span.focus();
+        li.classList.add('editing');
       }
     }
     // Create button to delete
     const deleteButton = document.createElement('button');
+    deleteButton.classList.add('btn');
     deleteButton.innerText = 'X';
     // Add delete function to button
     deleteButton.onclick = () => {
@@ -79,9 +85,13 @@ function renderTodoList(todos, parentElem) {
       renderTodoList(todos, todoList);
       saveTodos(todos, TODO_CACHE);
     }
+    // Create btn-group
+    const btnGroup = document.createElement('div');
+    btnGroup.classList.add('btn-group');
+    btnGroup.append(editButton, deleteButton);
     // Create list item
     const li = document.createElement('li');
-    li.append(checkbox, span, editButton, deleteButton);
+    li.append(checkbox, span, btnGroup);
     // Add list item to parent
     parentElem.appendChild(li);
   });

@@ -20,15 +20,18 @@
               name="todo-task"
               id="todo-task"
               placeholder="New task..." />
-            <span id="todo-task-error"></span>
+            <span
+              id="todo-task-error"
+              class="error-msg"></span>
           </div>
-          <div class="btn-group">
+          <div class="btn-group my-2">
             <button
               id="btn-clear-input"
               class="btn">
               Clear
             </button>
             <input
+              class="btn btn-primary"
               type="submit"
               value="Add" />
           </div>
@@ -36,9 +39,15 @@
       </section>
       <section id="list">
         <div class="btn-group">
-          <button id="btn-clear-tasks">Clear Tasks</button>
+          <button
+            id="btn-clear-tasks"
+            class="btn">
+            Clear Tasks
+          </button>
         </div>
-        <ul id="todo-list"></ul>
+        <ul
+          id="todo-list"
+          class="my-2"></ul>
       </section>
     </main>
 
