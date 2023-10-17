@@ -1,0 +1,130 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
+  background: #ddd;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+}
+
+main {
+  max-width: 720px;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  box-shadow: 0 0 6px 6px rgba(0, 0, 0, 0.1);
+}
+
+section {
+  width: calc(100% - 40px);
+}
+
+input,
+button {
+  min-width: 44px;
+  height: 44px;
+  padding: 0 8px;
+  border: none;
+  outline: none;
+}
+
+input[type="text"] {
+  --border-color: rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid var(--border-color);
+  &:focus-visible {
+    --border-color: rgb(75, 75, 255);
+  }
+  &.has-error {
+    --border-color: rgb(255, 25, 25);
+  }
+}
+
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.mx-2 {
+  margin: 0 20px;
+}
+
+.my-2 {
+  margin: 20px 0;
+}
+
+.error-msg {
+  color: rgb(255, 25, 25);
+  font-size: 0.8rem;
+  font-style: italic;
+  font-weight: 100;
+  margin-top: 8px;
+}
+
+.btn-group {
+  display: flex;
+  justify-content: end;
+  > .btn {
+    margin-left: 8px;
+  }
+}
+
+.btn {
+  text-transform: uppercase;
+  letter-spacing: 1.25px;
+  border-radius: 10px;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.btn:hover {
+  box-shadow: 4px 4px 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+.btn:active {
+  box-shadow: inset 2px 2px 2px 2px rgba(0, 0, 0, 0.5);
+}
+
+.btn-primary {
+  background: rgb(75, 75, 255);
+  color: #fff;
+}
+
+#todo-list {
+  list-style-type: none;
+  > li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px;
+    transition: all 0.3s ease-in-out;
+    padding: 8px;
+    &:hover {
+      background: rgb(170, 170, 170, 0.1);
+    }
+    &.editing {
+      border: 1px solid rgb(75, 75, 255);
+    }
+  }
+}
+
+span.task-done {
+  color: #aaa;
+  font-style: italic;
+  text-decoration: line-through;
+}
