@@ -93,6 +93,7 @@ todoForm.onsubmit = (e) => {
   const task = todoTask.value.trim();
   if (!task || task === '') {
     todoTaskError.innerText = 'Invalid new task!';
+    todoTask.classList.add('has-error');
     return;
   }
 
@@ -107,6 +108,8 @@ todoForm.onsubmit = (e) => {
       status: 'todo', // Data values : todo | inProgress | done
     }
   }
+
+  todoTask.classList.remove('has-error');
 
   todoArray.push(newTask());
   console.table(todoArray);
