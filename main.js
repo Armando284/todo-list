@@ -1,158 +1,159 @@
-"use strict";
+'use strict'
 
-function $(tag) {
+function $ (tag) {
   if (!tag || typeof tag !== 'string' || tag === '') {
-    throw new Error(`Invalid HTML tag: ${tag}`);
+    throw new Error(`Invalid HTML tag: ${tag}`)
   }
 
-  const elements = document.querySelectorAll(tag);
+  const elements = document.querySelectorAll(tag)
   if (!elements || elements.length === 0) {
-    throw new Error(`Empty HTML tag: ${tag}`);
+    throw new Error(`Empty HTML tag: ${tag}`)
   }
 
-  return elements.length === 1 ? elements[0] : elements;
+  return elements.length === 1 ? elements[0] : elements
 }
 
-const todoForm = $('#todo-form'),
-  todoTask = $('#todo-task'),
-  todoTaskError = $('#todo-task-error'),
-  todoList = $('#todo-list'),
-  btnClearTasks = $('#btn-clear-tasks'),
-  btnClearInput = $('#btn-clear-input');
+const todoForm = $('#todo-form')
+const todoTask = $('#todo-task')
+const todoTaskError = $('#todo-task-error')
+const todoList = $('#todo-list')
+const btnClearTasks = $('#btn-clear-tasks')
+const btnClearInput = $('#btn-clear-input')
 
-const TODO_CACHE = 'todo-local-cache';
+const TODO_CACHE = 'todo-local-cache'
 
-let todoArray = [];
+let todoArray = []
 
-function renderTodoList(todos, parentElem) {
+function renderTodoList (todos, parentElem) {
   if (todos.length === 0) {
-    parentElem.innerHTML = '<span>No tasks to be done!</span>';
-    return;
+    parentElem.innerHTML = '<span>No tasks to be done!</span>'
+    return
   }
-  parentElem.innerHTML = '';
-  todos.forEach(todo => {
+  parentElem.innerHTML = ''
+  todos.forEach((todo) => {
     // Create task is done checkbox
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
+    const checkbox = document.createElement('input')
+    checkbox.type = 'checkbox'
     if (todo.status === 'done') {
-      checkbox.setAttribute('checked', true);
+      checkbox.setAttribute('checked', true)
     }
     checkbox.onchange = () => {
       if (checkbox.checked) {
-        todo.status = 'done';
-        span.classList.add('task-done');
+        todo.status = 'done'
+        span.classList.add('task-done')
       } else {
-        todo.status = 'todo';
-        span.classList.remove('task-done');
+        todo.status = 'todo'
+        span.classList.remove('task-done')
       }
-      console.table(todoArray);
-      saveTodos(todos, TODO_CACHE);
+      console.table(todoArray)
+      saveTodos(todos, TODO_CACHE)
     }
     // Create text
-    const span = document.createElement('span');
-    span.innerText = todo.task;
+    const span = document.createElement('span')
+    span.innerText = todo.task
+    if (todo.status === 'done') {
+      span.classList.add('task-done')
+    }
     // Create button to update
-    const editButton = document.createElement('button');
-    editButton.classList.add('btn');
-    editButton.innerText = 'E';
+    const editButton = document.createElement('button')
+    editButton.classList.add('btn')
+    editButton.innerText = 'E'
     editButton.onclick = () => {
-      const isEditable = span.contentEditable === 'true';
+      const isEditable = span.contentEditable === 'true'
       if (isEditable) {
         // Save and exit edit mode
-        todo.task = span.innerText.trim();
-        console.table(todos);
-        saveTodos(todos, TODO_CACHE);
-        editButton.innerText = 'E';
-        span.removeAttribute('contenteditable');
-        li.classList.remove('editing');
-
+        todo.task = span.innerText.trim()
+        console.table(todos)
+        saveTodos(todos, TODO_CACHE)
+        editButton.innerText = 'E'
+        span.removeAttribute('contenteditable')
+        li.classList.remove('editing')
       } else {
         // Enter edit mode
-        editButton.innerText = 'S';
-        span.setAttribute('contenteditable', true);
-        span.focus();
-        li.classList.add('editing');
+        editButton.innerText = 'S'
+        span.setAttribute('contenteditable', true)
+        span.focus()
+        li.classList.add('editing')
       }
     }
     // Create button to delete
-    const deleteButton = document.createElement('button');
-    deleteButton.classList.add('btn');
-    deleteButton.innerText = 'X';
+    const deleteButton = document.createElement('button')
+    deleteButton.classList.add('btn')
+    deleteButton.innerText = 'X'
     // Add delete function to button
     deleteButton.onclick = () => {
       // Update the todoArray to one without this item
-      todos = todos.filter(t => t.id !== todo.id);
-      renderTodoList(todos, todoList);
-      saveTodos(todos, TODO_CACHE);
+      todos = todos.filter((t) => t.id !== todo.id)
+      renderTodoList(todos, todoList)
+      saveTodos(todos, TODO_CACHE)
     }
     // Create btn-group
-    const btnGroup = document.createElement('div');
-    btnGroup.classList.add('btn-group');
-    btnGroup.append(editButton, deleteButton);
+    const btnGroup = document.createElement('div')
+    btnGroup.classList.add('btn-group')
+    btnGroup.append(editButton, deleteButton)
     // Create list item
-    const li = document.createElement('li');
-    li.append(checkbox, span, btnGroup);
+    const li = document.createElement('li')
+    li.append(checkbox, span, btnGroup)
     // Add list item to parent
-    parentElem.appendChild(li);
-  });
+    parentElem.appendChild(li)
+  })
 }
 
 todoForm.onsubmit = (e) => {
-  e.preventDefault();
+  e.preventDefault()
 
-  const task = todoTask.value.trim();
+  const task = todoTask.value.trim()
   if (!task || task === '') {
-    todoTaskError.innerText = 'Invalid new task!';
-    todoTask.classList.add('has-error');
-    return;
+    todoTaskError.innerText = 'Invalid new task!'
+    todoTask.classList.add('has-error')
+    return
   }
 
   const newTask = () => {
-    let id;
+    let id
     do {
-      id = Math.floor(Math.random() * 1000000);
-    } while (todoArray.find(todo => todo.id === id) !== undefined);
+      id = Math.floor(Math.random() * 1000000)
+    } while (todoArray.find((todo) => todo.id === id) !== undefined)
     return {
       id,
       task,
-      status: 'todo', // Data values : todo | inProgress | done
+      status: 'todo'
     }
   }
 
-  todoTask.classList.remove('has-error');
+  todoTask.classList.remove('has-error')
 
-  todoArray.push(newTask());
-  console.table(todoArray);
-  renderTodoList(todoArray, todoList);
-  saveTodos(todoArray, TODO_CACHE);
-  todoForm.reset();
-  todoTaskError.innerText = '';
+  todoArray.push(newTask())
+  console.table(todoArray)
+  renderTodoList(todoArray, todoList)
+  saveTodos(todoArray, TODO_CACHE)
+  todoForm.reset()
+  todoTaskError.innerText = ''
 }
 
-function saveTodos(todos, key) {
-  localStorage.setItem(key, JSON.stringify(todos));
+function saveTodos (todos, key) {
+  localStorage.setItem(key, JSON.stringify(todos))
 }
 
-function readTodos(key) {
-  return JSON.parse(localStorage.getItem(key)) ?? [];
+function readTodos (key) {
+  return JSON.parse(localStorage.getItem(key)) ?? []
 }
 
 btnClearTasks.onclick = (e) => {
-  e.stopPropagation();
-  todoArray = [];
-  localStorage.removeItem(TODO_CACHE);
-  renderTodoList(todoArray, todoList);
+  e.stopPropagation()
+  todoArray = []
+  localStorage.removeItem(TODO_CACHE)
+  renderTodoList(todoArray, todoList)
 }
 
 btnClearInput.onclick = (e) => {
-  e.stopPropagation();
-  e.preventDefault();
-  todoForm.reset();
+  e.stopPropagation()
+  e.preventDefault()
+  todoForm.reset()
 }
 
 (function () {
-  todoArray = readTodos(TODO_CACHE);
-  renderTodoList(todoArray, todoList);
-  console.table(todoArray);
-})();
-
+  todoArray = readTodos(TODO_CACHE)
+  renderTodoList(todoArray, todoList)
+  console.table(todoArray)
+})()
