@@ -30,56 +30,59 @@ function renderTodoList (todos, parentElem) {
     return
   }
   parentElem.innerHTML = ''
-  todos.forEach((todo) => {
+  todos.forEach((todo, index) => {
     // Create task is done checkbox
     const checkbox = document.createElement('input')
     checkbox.type = 'checkbox'
+    checkbox.classList.add('mr-2')
     if (todo.status === 'done') {
       checkbox.setAttribute('checked', true)
     }
     checkbox.onchange = () => {
       if (checkbox.checked) {
         todo.status = 'done'
-        span.classList.add('task-done')
+        label.classList.add('line-through', 'text-gray-400', 'italic')
       } else {
         todo.status = 'todo'
-        span.classList.remove('task-done')
+        label.classList.remove('line-through', 'text-gray-400', 'italic')
       }
       console.table(todoArray)
       saveTodos(todos, TODO_CACHE)
     }
     // Create text
-    const span = document.createElement('span')
-    span.innerText = todo.task
+    const label = document.createElement('label')
+    label.classList.add('flex', 'align-middle', 'items-center')
+    label.append(checkbox, todo.task)
     if (todo.status === 'done') {
-      span.classList.add('task-done')
+      label.classList.add('line-through', 'text-gray-400', 'italic')
     }
+    const buttonStyle = 'flex justify-center rounded-md bg-gray-100 px-3 py-1.5 text-sm font-semibold leading-6 text-gray-900 shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600'.split(' ')
     // Create button to update
     const editButton = document.createElement('button')
-    editButton.classList.add('btn')
-    editButton.innerText = 'E'
+    editButton.classList.add(...buttonStyle, 'mr-2')
+    editButton.innerText = '✏️'
     editButton.onclick = () => {
-      const isEditable = span.contentEditable === 'true'
+      const isEditable = label.contentEditable === 'true'
       if (isEditable) {
         // Save and exit edit mode
-        todo.task = span.innerText.trim()
+        todo.task = label.innerText.trim()
         console.table(todos)
         saveTodos(todos, TODO_CACHE)
-        editButton.innerText = 'E'
-        span.removeAttribute('contenteditable')
+        editButton.innerText = '✏️'
+        label.removeAttribute('contenteditable')
         li.classList.remove('editing')
       } else {
         // Enter edit mode
-        editButton.innerText = 'S'
-        span.setAttribute('contenteditable', true)
-        span.focus()
+        editButton.innerText = '🔒'
+        label.setAttribute('contenteditable', true)
+        label.focus()
         li.classList.add('editing')
       }
     }
     // Create button to delete
     const deleteButton = document.createElement('button')
-    deleteButton.classList.add('btn')
-    deleteButton.innerText = 'X'
+    deleteButton.classList.add(...buttonStyle)
+    deleteButton.innerText = '👎'
     // Add delete function to button
     deleteButton.onclick = () => {
       // Update the todoArray to one without this item
@@ -89,11 +92,50 @@ function renderTodoList (todos, parentElem) {
     }
     // Create btn-group
     const btnGroup = document.createElement('div')
-    btnGroup.classList.add('btn-group')
+    btnGroup.classList.add('flex')
     btnGroup.append(editButton, deleteButton)
     // Create list item
     const li = document.createElement('li')
-    li.append(checkbox, span, btnGroup)
+    li.classList.add('flex', 'justify-between', 'align-middle', 'px-2', 'py-1', 'rounded-lg', 'hover:bg-indigo-100', 'hover:shadow-sm', 'cursor-grab')
+    if (index % 2 === 0) {
+      li.classList.add('bg-gray-100')
+    }
+    li.append(label, btnGroup)
+    li.setAttribute('draggable', true)
+
+    // manage drag & drop
+    const dragInfoType = 'text/todo'
+    // drag start
+    li.ondragstart = (e) => {
+      const dt = e.dataTransfer
+      dt.setData(dragInfoType, index)
+      dt.effectAllowed = 'move'
+    }
+    // drag enter
+    li.ondragenter = (e) => {
+      const items = e.dataTransfer.items
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i]
+        if (item.kind === 'string' && item.type === dragInfoType) {
+          e.preventDefault()
+          return
+        }
+      }
+    }
+    // drag over
+    li.ondragover = (e) => {
+      e.dataTransfer.dropEffect = 'move'
+      e.preventDefault()
+    }
+    // drop
+    li.ondrop = (e) => {
+      const idx = e.dataTransfer.getData(dragInfoType)
+      const temp = todos.splice(idx, 1)[0]
+      todos = [...todos.slice(0, index), temp, ...todos.slice(index)]
+      todoArray = todos
+      renderTodoList(todos, todoList)
+      saveTodos(todos, TODO_CACHE)
+    }
     // Add list item to parent
     parentElem.appendChild(li)
   })
@@ -110,12 +152,8 @@ todoForm.onsubmit = (e) => {
   }
 
   const newTask = () => {
-    let id
-    do {
-      id = Math.floor(Math.random() * 1000000)
-    } while (todoArray.find((todo) => todo.id === id) !== undefined)
     return {
-      id,
+      id: crypto.randomUUID(),
       task,
       status: 'todo'
     }
